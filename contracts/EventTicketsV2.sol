@@ -69,7 +69,8 @@ contract EventTicketsV2 {
             - return the event's ID
     */
     function addEvent(string memory description, string memory URL, uint tickets) public onlyOwner returns (uint eventId) {
-        events[eventID++] = Event({description: description, URL: URL, totalTickets: tickets, sales: 0, isOpen: true});
+        events[eventID] = Event({description: description, URL: URL, totalTickets: tickets, sales: 0, isOpen: true});
+        eventID++;
         emit LogEventAdded(description, URL, tickets, eventID - 1);
         return eventID - 1;
     }
