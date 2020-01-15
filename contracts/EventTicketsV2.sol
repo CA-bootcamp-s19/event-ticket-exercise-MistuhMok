@@ -68,11 +68,15 @@ contract EventTicketsV2 {
             - emit the appropriate event
             - return the event's ID
     */
-    function addEvent(string memory description, string memory URL, uint tickets) public onlyOwner returns (uint eventId) {
+    function addEvent(string memory description, string memory URL, uint tickets) public onlyOwner returns (uint currEventId) {
+
         events[eventID] = Event({description: description, URL: URL, totalTickets: tickets, sales: 0, isOpen: true});
-        eventID++;
-        emit LogEventAdded(description, URL, tickets, eventID - 1);
-        return eventID - 1;
+
+        uint currentEventId = eventID;
+        emit LogEventAdded(description, URL, tickets, currentEventId);
+
+        eventID++; // use safeMath lib
+        return currentEventId;
     }
 
     /*
@@ -86,7 +90,7 @@ contract EventTicketsV2 {
             5. isOpen
     */
     function readEvent(uint eventId) public view returns (string memory description, string memory URL, uint tickets, uint sales, bool isOpen){
-        return (events[eventID].description, 
+        return (events[eventId].description, 
         events[eventId].URL,
         events[eventId].totalTickets,
         events[eventId].sales,
@@ -131,11 +135,12 @@ contract EventTicketsV2 {
             - emit the appropriate event
     */
     function getRefund(uint eventId) public {
-        require(events[eventID].buyers[msg.sender] > 0);
+        uint tickets = events[eventID].buyers[msg.sender];
+        require(tickets > 0);
         
-        events[eventId].sales -= events[eventId].buyers[msg.sender];
-        emit LogGetRefund(msg.sender, eventId, events[eventId].buyers[msg.sender]);
-        msg.sender.transfer(events[eventId].buyers[msg.sender] * PRICE_TICKET);
+        events[eventId].sales -= tickets;
+        emit LogGetRefund(msg.sender, eventId, tickets);
+        msg.sender.transfer(tickets * PRICE_TICKET);
     }
 
     /*
