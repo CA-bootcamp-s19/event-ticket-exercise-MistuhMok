@@ -135,7 +135,7 @@ contract EventTicketsV2 {
             - emit the appropriate event
     */
     function getRefund(uint eventId) public {
-        uint tickets = events[eventID].buyers[msg.sender];
+        uint tickets = events[eventId].buyers[msg.sender];
         require(tickets > 0);
         
         events[eventId].sales -= tickets;
